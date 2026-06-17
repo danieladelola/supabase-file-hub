@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, Radio, Coins, TrendingUp, Users,
-  Bell, UserCheck, FileText, Settings, LogOut, Sparkles, Menu, ChevronDown, ShieldCheck, ArrowLeftRight, Wallet, BadgeCheck, Pickaxe
+  Bell, UserCheck, FileText, Settings, LogOut, Sparkles, Menu, ChevronDown, ShieldCheck, ArrowLeftRight, Wallet, BadgeCheck, Pickaxe, Megaphone
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
@@ -48,6 +48,7 @@ const items: Item[] = [
     { to: "/admin/users/all", label: "All Users" },
   ]},
   { to: "/admin/notifications", label: "Send Notification", icon: Bell },
+  { to: "/admin/announcements", label: "Announcements", icon: Megaphone },
   { to: "/admin/copy-experts", label: "Copy Experts", icon: UserCheck },
   { label: "Reports", icon: FileText, children: [
     { to: "/admin/reports/transactions", label: "Transactions" },
