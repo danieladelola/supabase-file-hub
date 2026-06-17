@@ -44,6 +44,7 @@ const AdminUserDetail = lazy(() => import("./pages/admin/AdminUserDetail"));
 const AdminNotifications = lazy(() => import("./pages/admin/AdminNotifications"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminEmailSettings = lazy(() => import("./pages/admin/AdminEmailSettings"));
+const AdminAnnouncements = lazy(() => import("./pages/admin/AdminAnnouncements"));
 const AdminExchange = lazy(() => import("./pages/admin/AdminExchange"));
 const AdminKyc = lazy(() => import("./pages/admin/AdminKyc"));
 const AdminBalances = lazy(() => import("./pages/admin/AdminBalances"));
@@ -121,6 +122,7 @@ const App = () => (
                 <Route path="notifications" element={<AdminNotifications />} />
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="settings/email" element={<AdminEmailSettings />} />
+                <Route path="announcements" element={<AdminAnnouncements />} />
                 <Route path="exchange" element={<AdminExchange />} />
                 <Route path="kyc" element={<AdminKyc />} />
                 <Route path="balances" element={<AdminBalances />} />
