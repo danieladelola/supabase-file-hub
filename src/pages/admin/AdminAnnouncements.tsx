@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import {
   Megaphone, Loader2, Send, RefreshCw,
   Bold, Italic, Underline, List, ListOrdered, Link2, Heading2, Heading3,
+  AlignLeft, AlignCenter, AlignRight, AlignJustify, Image as ImageIcon,
+  Quote, Minus, Undo2, Redo2, Eraser, Strikethrough, Palette, Highlighter,
 } from "lucide-react";
 
 export default function AdminAnnouncements() {
