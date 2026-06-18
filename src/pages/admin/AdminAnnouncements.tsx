@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import {
   Megaphone, Loader2, Send, RefreshCw,
   Bold, Italic, Underline, List, ListOrdered, Link2, Heading2, Heading3,
+  AlignLeft, AlignCenter, AlignRight, AlignJustify, Image as ImageIcon,
+  Quote, Minus, Undo2, Redo2, Eraser, Strikethrough, Palette, Highlighter,
 } from "lucide-react";
 
 export default function AdminAnnouncements() {
@@ -48,6 +50,7 @@ function Compose() {
   const [testTo, setTestTo] = useState("");
   const [busy, setBusy] = useState<"idle" | "test" | "all">("idle");
   const editorRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   function exec(cmd: string, value?: string) {
     editorRef.current?.focus();
@@ -56,6 +59,27 @@ function Compose() {
 
   function getHtml(): string {
     return editorRef.current?.innerHTML.trim() ?? "";
+  }
+
+  function insertImageFile(file: File) {
+    if (!file.type.startsWith("image/")) return toast.error("Pick an image file");
+    if (file.size > 2 * 1024 * 1024) return toast.error("Image too large (max 2MB)");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result ?? "");
+      editorRef.current?.focus();
+      const img = `<img src="${dataUrl}" alt="" style="max-width:100%;height:auto;border-radius:8px;margin:8px 0;" />`;
+      document.execCommand("insertHTML", false, img);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function insertHr() {
+    exec("insertHTML", '<hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;" />');
+  }
+
+  function insertQuote() {
+    exec("formatBlock", "<blockquote>");
   }
 
   async function persistAnnouncement(status: "draft" | "sent" | "partial"): Promise<string | null> {
@@ -107,27 +131,90 @@ function Compose() {
 
         <div className="space-y-2">
           <Label>Body</Label>
-          <div className="flex flex-wrap gap-1 rounded-md border border-border/60 bg-muted/30 p-1">
-            <ToolBtn onClick={() => exec("bold")}        icon={<Bold className="h-4 w-4" />} />
-            <ToolBtn onClick={() => exec("italic")}      icon={<Italic className="h-4 w-4" />} />
-            <ToolBtn onClick={() => exec("underline")}   icon={<Underline className="h-4 w-4" />} />
-            <div className="w-px bg-border mx-1" />
-            <ToolBtn onClick={() => exec("formatBlock", "<h2>")} icon={<Heading2 className="h-4 w-4" />} />
-            <ToolBtn onClick={() => exec("formatBlock", "<h3>")} icon={<Heading3 className="h-4 w-4" />} />
-            <ToolBtn onClick={() => exec("formatBlock", "<p>")}  icon={<span className="text-xs px-1">P</span>} />
-            <div className="w-px bg-border mx-1" />
-            <ToolBtn onClick={() => exec("insertUnorderedList")} icon={<List className="h-4 w-4" />} />
-            <ToolBtn onClick={() => exec("insertOrderedList")}   icon={<ListOrdered className="h-4 w-4" />} />
-            <div className="w-px bg-border mx-1" />
-            <ToolBtn onClick={() => { const url = prompt("Link URL"); if (url) exec("createLink", url); }} icon={<Link2 className="h-4 w-4" />} />
+          <div className="flex flex-wrap items-center gap-1 rounded-md border border-border/60 bg-muted/30 p-1.5">
+            <ToolBtn title="Bold" onClick={() => exec("bold")}        icon={<Bold className="h-4 w-4" />} />
+            <ToolBtn title="Italic" onClick={() => exec("italic")}      icon={<Italic className="h-4 w-4" />} />
+            <ToolBtn title="Underline" onClick={() => exec("underline")}   icon={<Underline className="h-4 w-4" />} />
+            <ToolBtn title="Strikethrough" onClick={() => exec("strikeThrough")} icon={<Strikethrough className="h-4 w-4" />} />
+            <Sep />
+            <select
+              onChange={(e) => { exec("formatBlock", e.target.value); e.currentTarget.selectedIndex = 0; }}
+              className="h-8 rounded border border-border/60 bg-background text-xs px-2"
+              defaultValue=""
+              title="Paragraph style"
+            >
+              <option value="" disabled>Style</option>
+              <option value="<h1>">Heading 1</option>
+              <option value="<h2>">Heading 2</option>
+              <option value="<h3>">Heading 3</option>
+              <option value="<p>">Paragraph</option>
+            </select>
+            <select
+              onChange={(e) => { exec("fontSize", e.target.value); e.currentTarget.selectedIndex = 0; }}
+              className="h-8 rounded border border-border/60 bg-background text-xs px-2"
+              defaultValue=""
+              title="Font size"
+            >
+              <option value="" disabled>Size</option>
+              <option value="2">Small</option>
+              <option value="3">Normal</option>
+              <option value="4">Medium</option>
+              <option value="5">Large</option>
+              <option value="6">X-Large</option>
+              <option value="7">XX-Large</option>
+            </select>
+            <Sep />
+            <ToolBtn title="H2" onClick={() => exec("formatBlock", "<h2>")} icon={<Heading2 className="h-4 w-4" />} />
+            <ToolBtn title="H3" onClick={() => exec("formatBlock", "<h3>")} icon={<Heading3 className="h-4 w-4" />} />
+            <Sep />
+            <ToolBtn title="Bulleted list" onClick={() => exec("insertUnorderedList")} icon={<List className="h-4 w-4" />} />
+            <ToolBtn title="Numbered list" onClick={() => exec("insertOrderedList")}   icon={<ListOrdered className="h-4 w-4" />} />
+            <ToolBtn title="Quote" onClick={insertQuote} icon={<Quote className="h-4 w-4" />} />
+            <Sep />
+            <ToolBtn title="Align left"    onClick={() => exec("justifyLeft")}    icon={<AlignLeft className="h-4 w-4" />} />
+            <ToolBtn title="Align center"  onClick={() => exec("justifyCenter")}  icon={<AlignCenter className="h-4 w-4" />} />
+            <ToolBtn title="Align right"   onClick={() => exec("justifyRight")}   icon={<AlignRight className="h-4 w-4" />} />
+            <ToolBtn title="Justify"       onClick={() => exec("justifyFull")}    icon={<AlignJustify className="h-4 w-4" />} />
+            <Sep />
+            <label title="Text color" className="h-8 w-8 inline-flex items-center justify-center rounded hover:bg-accent cursor-pointer relative">
+              <Palette className="h-4 w-4" />
+              <input type="color" onChange={(e) => exec("foreColor", e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer" />
+            </label>
+            <label title="Highlight" className="h-8 w-8 inline-flex items-center justify-center rounded hover:bg-accent cursor-pointer relative">
+              <Highlighter className="h-4 w-4" />
+              <input type="color" defaultValue="#fde68a"
+                onChange={(e) => exec("hiliteColor", e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer" />
+            </label>
+            <Sep />
+            <ToolBtn title="Insert link" onClick={() => { const url = prompt("Link URL"); if (url) exec("createLink", url); }} icon={<Link2 className="h-4 w-4" />} />
+            <ToolBtn title="Insert image" onClick={() => fileRef.current?.click()} icon={<ImageIcon className="h-4 w-4" />} />
+            <input ref={fileRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) insertImageFile(f); e.currentTarget.value = ""; }} />
+            <ToolBtn title="Divider" onClick={insertHr} icon={<Minus className="h-4 w-4" />} />
+            <Sep />
+            <ToolBtn title="Undo" onClick={() => exec("undo")} icon={<Undo2 className="h-4 w-4" />} />
+            <ToolBtn title="Redo" onClick={() => exec("redo")} icon={<Redo2 className="h-4 w-4" />} />
+            <ToolBtn title="Clear formatting" onClick={() => exec("removeFormat")} icon={<Eraser className="h-4 w-4" />} />
           </div>
           <div
             ref={editorRef}
             contentEditable
             suppressContentEditableWarning
-            className="min-h-[260px] rounded-md border border-border/60 bg-background p-4 text-sm focus:outline-none prose prose-sm dark:prose-invert max-w-none"
+            onPaste={(e) => {
+              const items = e.clipboardData?.items;
+              if (!items) return;
+              for (const it of items) {
+                if (it.type.startsWith("image/")) {
+                  const f = it.getAsFile();
+                  if (f) { e.preventDefault(); insertImageFile(f); return; }
+                }
+              }
+            }}
+            className="min-h-[320px] rounded-md border border-border/60 bg-background p-4 text-sm focus:outline-none prose prose-sm dark:prose-invert max-w-none [&_img]:rounded-md [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground"
           />
-          <p className="text-xs text-muted-foreground">Tip: paste plain text for cleanest formatting.</p>
+          <p className="text-xs text-muted-foreground">Tip: drag-and-paste images, or use the image button (max 2MB, embedded inline).</p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-3 pt-2 border-t border-border/60">
@@ -153,13 +240,17 @@ function Compose() {
   );
 }
 
-function ToolBtn({ onClick, icon }: { onClick: () => void; icon: React.ReactNode }) {
+function ToolBtn({ onClick, icon, title }: { onClick: () => void; icon: React.ReactNode; title?: string }) {
   return (
-    <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={onClick}
-      className="h-8 w-8 inline-flex items-center justify-center rounded hover:bg-accent text-foreground/80">
+    <button type="button" title={title} onMouseDown={(e) => e.preventDefault()} onClick={onClick}
+      className="h-8 w-8 inline-flex items-center justify-center rounded hover:bg-accent text-foreground/80 transition-colors">
       {icon}
     </button>
   );
+}
+
+function Sep() {
+  return <div className="w-px h-6 bg-border mx-1" />;
 }
 
 /* ---------------- History ---------------- */
