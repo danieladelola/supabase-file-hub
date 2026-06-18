@@ -101,15 +101,22 @@ async function log(row: { recipient: string; subject: string; template_key?: str
 async function sendOne(client: SMTPClient, smtp: SmtpConfig, brand: BrandConfig, opts: {
   to: string; subject: string; html: string; templateKey?: string | null;
 }) {
-  const wrapped = wrap(opts.html, brand);
+  // Extract base64 data: images from the body and convert them into inline
+  // CID attachments. Many SMTP servers and mail clients reject or strip
+  // emails whose HTML contains huge inline data:URIs, leading to a blank
+  // delivered message. Inline CID attachments are the universally supported
+  // way to embed images in HTML email.
+  const { html: htmlForBody, attachments } = extractInlineImages(opts.html);
+  const wrapped = wrap(htmlForBody, brand);
   try {
     await client.send({
       from: `${smtp.fromName} <${smtp.fromEmail}>`,
       to: opts.to,
       replyTo: smtp.replyTo,
       subject: opts.subject,
-      content: stripHtml(opts.html),
+      content: stripHtml(htmlForBody),
       html: wrapped,
+      attachments: attachments.length ? attachments : undefined,
     });
     await log({ recipient: opts.to, subject: opts.subject, template_key: opts.templateKey ?? null, status: "sent" });
     return { ok: true };
@@ -118,6 +125,28 @@ async function sendOne(client: SMTPClient, smtp: SmtpConfig, brand: BrandConfig,
     await log({ recipient: opts.to, subject: opts.subject, template_key: opts.templateKey ?? null, status: "failed", error: msg });
     return { ok: false, error: msg };
   }
+}
+
+// deno-lint-ignore no-explicit-any
+function extractInlineImages(html: string): { html: string; attachments: any[] } {
+  // deno-lint-ignore no-explicit-any
+  const attachments: any[] = [];
+  let idx = 0;
+  const out = html.replace(/src=("|')data:(image\/[a-zA-Z0-9+.-]+);base64,([^"']+)\1/g, (_m, q, mime, b64) => {
+    idx++;
+    const cid = `img${idx}.${Date.now()}@haratrading`;
+    const ext = (mime.split("/")[1] || "png").toLowerCase().replace("+xml", "");
+    attachments.push({
+      filename: `image-${idx}.${ext}`,
+      content: b64,
+      encoding: "base64",
+      contentType: mime,
+      contentDisposition: "inline",
+      contentID: cid,
+    });
+    return `src=${q}cid:${cid}${q}`;
+  });
+  return { html: out, attachments };
 }
 
 function stripHtml(s: string): string {
