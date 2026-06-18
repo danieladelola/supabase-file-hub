@@ -289,11 +289,12 @@ function Compose() {
           <div className="space-y-2">
             <Label>Send test to</Label>
             <div className="flex gap-2">
-              <Input type="email" placeholder="you@example.com" value={testTo} onChange={(e) => setTestTo(e.target.value)} />
+              <Input type="text" placeholder="you@example.com, friend@example.com" value={testTo} onChange={(e) => setTestTo(e.target.value)} />
               <Button variant="outline" onClick={sendTest} disabled={busy !== "idle"}>
                 {busy === "test" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>
+            <p className="text-xs text-muted-foreground">Separate multiple emails with commas or semicolons.</p>
           </div>
           <div className="space-y-2">
             <Label>&nbsp;</Label>
