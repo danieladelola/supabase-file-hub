@@ -51,6 +51,44 @@ function Compose() {
   const [busy, setBusy] = useState<"idle" | "test" | "all">("idle");
   const editorRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null);
+  const [, forceTick] = useState(0);
+
+  function refreshSelected() { forceTick((t) => t + 1); }
+
+  function applyImgAlign(align: "left" | "center" | "right") {
+    if (!selectedImg) return;
+    selectedImg.style.display = "block";
+    selectedImg.style.marginTop = "8px";
+    selectedImg.style.marginBottom = "8px";
+    if (align === "left")   { selectedImg.style.marginLeft = "0";    selectedImg.style.marginRight = "auto"; selectedImg.style.float = "none"; }
+    if (align === "center") { selectedImg.style.marginLeft = "auto"; selectedImg.style.marginRight = "auto"; selectedImg.style.float = "none"; }
+    if (align === "right")  { selectedImg.style.marginLeft = "auto"; selectedImg.style.marginRight = "0";    selectedImg.style.float = "none"; }
+    refreshSelected();
+  }
+
+  function applyImgWidth(pct: number) {
+    if (!selectedImg) return;
+    selectedImg.style.width = `${pct}%`;
+    selectedImg.style.height = "auto";
+    selectedImg.style.maxWidth = "100%";
+    refreshSelected();
+  }
+
+  function removeSelectedImg() {
+    if (!selectedImg) return;
+    selectedImg.remove();
+    setSelectedImg(null);
+  }
+
+  function onEditorClick(e: React.MouseEvent) {
+    const t = e.target as HTMLElement;
+    if (t.tagName === "IMG") {
+      setSelectedImg(t as HTMLImageElement);
+    } else {
+      setSelectedImg(null);
+    }
+  }
 
   function exec(cmd: string, value?: string) {
     editorRef.current?.focus();
@@ -68,7 +106,7 @@ function Compose() {
     reader.onload = () => {
       const dataUrl = String(reader.result ?? "");
       editorRef.current?.focus();
-      const img = `<img src="${dataUrl}" alt="" style="max-width:100%;height:auto;border-radius:8px;margin:8px 0;" />`;
+      const img = `<img src="${dataUrl}" alt="" style="width:100%;max-width:100%;height:auto;border-radius:8px;margin:8px 0;display:block;" />`;
       document.execCommand("insertHTML", false, img);
     };
     reader.readAsDataURL(file);
