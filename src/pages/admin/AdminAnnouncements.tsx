@@ -137,13 +137,16 @@ function Compose() {
   }
 
   async function sendTest() {
-    if (!testTo) return toast.error("Enter a test recipient");
+    const raw = testTo.trim();
+    if (!raw) return toast.error("Enter at least one test recipient");
+    const emails = raw.split(/[,;]/).map((e) => e.trim()).filter((e) => e.includes("@"));
+    if (!emails.length) return toast.error("Enter valid email addresses");
     const html = getHtml();
     if (!subject || !html) return toast.error("Subject and body are required");
     setBusy("test");
-    const r = await broadcast({ subject, html, test_to: testTo });
+    const r = await broadcast({ subject, html, test_to: emails });
     setBusy("idle");
-    if (!r.ok) toast.error(r.error ?? "Failed"); else toast.success("Test email sent");
+    if (!r.ok) toast.error(r.error ?? "Failed"); else toast.success(`Test sent to ${emails.length} recipient(s)`);
   }
 
   async function sendAll() {
