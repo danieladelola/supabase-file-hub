@@ -210,13 +210,17 @@ Deno.serve(async (req) => {
       if (action === "broadcast") {
         const subject = String(body.subject ?? "");
         const html = String(body.html ?? "");
-        const testTo = body.test_to ? String(body.test_to) : null;
+        const rawTestTo = body.test_to ?? null;
         const announcementId = body.announcement_id ?? null;
         if (!subject || !html) throw new Error("Missing subject/html");
 
         const recipients: string[] = [];
-        if (testTo) {
-          recipients.push(testTo);
+        if (rawTestTo) {
+          if (Array.isArray(rawTestTo)) {
+            recipients.push(...rawTestTo.filter((e: string) => e.includes("@")));
+          } else {
+            recipients.push(...String(rawTestTo).split(/[,;]/).map((e) => e.trim()).filter((e) => e.includes("@")));
+          }
         } else {
           // Pull all confirmed users from auth.users via admin API
           let page = 1; const perPage = 1000;
