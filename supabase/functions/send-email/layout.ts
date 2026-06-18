@@ -21,14 +21,14 @@ export function wrap(innerHtml: string, opts: BrandOptions): string {
   // (e.g. stray "=20" appearing in some mail clients). Brand mark is rendered
   // as styled text so it always displays, even when remote images are blocked.
   const html =
-`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><title>${name}</title></head>`+
+`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>${name}</title></head>`+
 `<body style="margin:0;padding:0;background:#0b1220;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2937;">`+
 (opts.preheader?`<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(opts.preheader)}</div>`:"")+
 `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b1220;padding:40px 12px;"><tr><td align="center">`+
 `<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(0,0,0,.45);">`+
-`<tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:28px 32px;text-align:center;">`+
+`<tr><td style="background:#7E57DF;padding:28px 32px;text-align:center;">`+
 `<a href="${url}" style="text-decoration:none;display:inline-block;color:#ffffff;font-size:24px;font-weight:800;letter-spacing:.5px;">`+
-`<span style="display:inline-block;width:32px;height:32px;line-height:32px;background:${primary};color:#0b1220;border-radius:8px;font-weight:900;margin-right:10px;vertical-align:middle;">H</span>`+
+`<span style="display:inline-block;width:32px;height:32px;line-height:32px;background:${primary};color:#ffffff;border-radius:8px;font-weight:900;margin-right:10px;vertical-align:middle;">H</span>`+
 `<span style="vertical-align:middle;">${name}</span></a></td></tr>`+
 `<tr><td style="padding:36px 36px 28px 36px;color:#111827;line-height:1.6;font-size:15px;">${innerHtml}</td></tr>`+
 `<tr><td style="padding:0 36px 32px 36px;"><div style="height:1px;background:#eef0f4;"></div></td></tr>`+
