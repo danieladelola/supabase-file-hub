@@ -51,6 +51,49 @@ function Compose() {
   const [busy, setBusy] = useState<"idle" | "test" | "all">("idle");
   const editorRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null);
+  const [, forceTick] = useState(0);
+
+  function refreshSelected() { forceTick((t) => t + 1); }
+
+  function applyImgAlign(align: "left" | "center" | "right") {
+    if (!selectedImg) return;
+    selectedImg.style.display = "block";
+    selectedImg.style.marginTop = "8px";
+    selectedImg.style.marginBottom = "8px";
+    if (align === "left")   { selectedImg.style.marginLeft = "0";    selectedImg.style.marginRight = "auto"; selectedImg.style.float = "none"; }
+    if (align === "center") { selectedImg.style.marginLeft = "auto"; selectedImg.style.marginRight = "auto"; selectedImg.style.float = "none"; }
+    if (align === "right")  { selectedImg.style.marginLeft = "auto"; selectedImg.style.marginRight = "0";    selectedImg.style.float = "none"; }
+    refreshSelected();
+  }
+
+  function applyImgWidth(pct: number) {
+    if (!selectedImg) return;
+    selectedImg.style.width = `${pct}%`;
+    selectedImg.style.height = "auto";
+    selectedImg.style.maxWidth = "100%";
+    refreshSelected();
+  }
+
+  function removeSelectedImg() {
+    if (!selectedImg) return;
+    selectedImg.remove();
+    setSelectedImg(null);
+  }
+
+  function onEditorClick(e: React.MouseEvent) {
+    const t = e.target as HTMLElement;
+    // clear outline on previously selected
+    if (selectedImg && selectedImg !== t) {
+      selectedImg.style.outline = "";
+      selectedImg.style.outlineOffset = "";
+    }
+    if (t.tagName === "IMG") {
+      setSelectedImg(t as HTMLImageElement);
+    } else {
+      setSelectedImg(null);
+    }
+  }
 
   function exec(cmd: string, value?: string) {
     editorRef.current?.focus();
@@ -68,7 +111,7 @@ function Compose() {
     reader.onload = () => {
       const dataUrl = String(reader.result ?? "");
       editorRef.current?.focus();
-      const img = `<img src="${dataUrl}" alt="" style="max-width:100%;height:auto;border-radius:8px;margin:8px 0;" />`;
+      const img = `<img src="${dataUrl}" alt="" style="width:100%;max-width:100%;height:auto;border-radius:8px;margin:8px 0;display:block;" />`;
       document.execCommand("insertHTML", false, img);
     };
     reader.readAsDataURL(file);
@@ -202,6 +245,7 @@ function Compose() {
             ref={editorRef}
             contentEditable
             suppressContentEditableWarning
+            onClick={onEditorClick}
             onPaste={(e) => {
               const items = e.clipboardData?.items;
               if (!items) return;
@@ -212,9 +256,30 @@ function Compose() {
                 }
               }
             }}
-            className="min-h-[320px] rounded-md border border-border/60 bg-background p-4 text-sm focus:outline-none prose prose-sm dark:prose-invert max-w-none [&_img]:rounded-md [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground"
+            className="ann-editor min-h-[320px] rounded-md border border-border/60 bg-background p-4 text-sm focus:outline-none prose prose-sm dark:prose-invert max-w-none [&_img]:rounded-md [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground"
           />
-          <p className="text-xs text-muted-foreground">Tip: drag-and-paste images, or use the image button (max 2MB, embedded inline).</p>
+          {selectedImg && (
+            <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/40 bg-primary/5 p-2 text-xs">
+              <span className="font-medium text-foreground">Image selected:</span>
+              <span className="text-muted-foreground">Align</span>
+              <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => applyImgAlign("left")}><AlignLeft className="h-3.5 w-3.5" /></Button>
+              <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => applyImgAlign("center")}><AlignCenter className="h-3.5 w-3.5" /></Button>
+              <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => applyImgAlign("right")}><AlignRight className="h-3.5 w-3.5" /></Button>
+              <span className="text-muted-foreground ml-2">Size</span>
+              {[25, 50, 75, 100].map((p) => (
+                <Button key={p} size="sm" variant="outline" className="h-7 px-2" onClick={() => applyImgWidth(p)}>{p}%</Button>
+              ))}
+              <Button size="sm" variant="destructive" className="h-7 px-2 ml-auto" onClick={removeSelectedImg}>Remove</Button>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">Tip: click any image to align or resize it. Paste or drag images to insert (max 2MB).</p>
+          <style>{`.ann-editor img { cursor: pointer; transition: outline-color .15s; outline: 2px solid transparent; outline-offset: 2px; } .ann-editor img:hover { outline-color: hsl(var(--primary) / .35); }`}</style>
+          {selectedImg && (() => {
+            // outline the currently selected image
+            selectedImg.style.outline = "2px solid hsl(var(--primary))";
+            selectedImg.style.outlineOffset = "2px";
+            return null;
+          })()}
         </div>
 
         <div className="grid sm:grid-cols-2 gap-3 pt-2 border-t border-border/60">
