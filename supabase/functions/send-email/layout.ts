@@ -30,14 +30,14 @@ export function wrap(innerHtml: string, opts: BrandOptions): string {
 (opts.preheader?`<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(opts.preheader)}</div>`:"")+
 `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-wrap" style="background:#0b1220;padding:40px 12px;width:100%;"><tr><td align="center">`+
 `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="email-card" style="width:100%;max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(0,0,0,.45);">`+
-`<tr><td class="email-head" style="background:linear-gradient(135deg,#7E57DF 0%,#6B4FD1 50%,#5C4DB8 100%);padding:28px 32px;text-align:center;">`+
+`<tr><td class="email-head" style="background:#ffffff;padding:28px 32px;text-align:center;border-bottom:1px solid #e5e7eb;">`+
 `<a href="${url}" class="email-brand" style="text-decoration:none;display:inline-block;">`+
 `<img src="${logoUrl}" alt="${name}" width="180" class="email-logo-img" style="max-height:56px;width:180px;height:auto;display:block;margin:0 auto;border:0;outline:none;" /></a></td></tr>`+
 `<tr><td class="email-body" style="padding:36px 36px 28px 36px;color:#111827;line-height:1.6;font-size:15px;word-break:break-word;">${innerHtml}</td></tr>`+
 `<tr><td class="email-divider" style="padding:0 36px 32px 36px;"><div style="height:1px;background:#eef0f4;line-height:1px;font-size:1px;">&nbsp;</div></td></tr>`+
 `<tr><td class="email-foot" style="padding:0 36px 32px 36px;text-align:center;color:#6b7280;font-size:12px;line-height:1.7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">`+
-`<div style="margin-bottom:10px;"><a href="${url}" style="color:${primary};text-decoration:none;font-weight:700;font-size:15px;letter-spacing:0.3px;">${name}</a></div>`+
 `<div style="color:#6b7280;font-size:12px;margin-bottom:6px;">Need help? <a href="mailto:${support}" style="color:${accent};text-decoration:none;font-weight:600;">${support}</a></div>`+
+`<div style="margin-bottom:10px;"><a href="${url}" style="color:${primary};text-decoration:none;font-weight:700;font-size:15px;letter-spacing:0.3px;">${name}</a></div>`+
 `<div style="color:#9ca3af;font-size:11px;margin-top:10px;padding-top:10px;border-top:1px solid #f1f2f6;">&copy; ${year} ${name}. All rights reserved.</div>`+
 `</td></tr></table></td></tr></table></body></html>`;
   return html;
