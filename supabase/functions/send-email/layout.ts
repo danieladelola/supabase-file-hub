@@ -19,7 +19,7 @@ export function wrap(innerHtml: string, opts: BrandOptions): string {
   const url = escapeAttr(opts.siteUrl);
   const support = escapeAttr(opts.supportEmail);
 
-  const logoUrl = `${url}/__l5e/assets-v1/9186068a-a105-4a50-969c-493012240c00/hara-trading-logo.png`;
+  const logoUrl = "https://www.haratrading.com/assets/haratrading-logo-DtSMKejI.png";
 
   // Minified single-line HTML to avoid SMTP quoted-printable soft-break artifacts
   // (e.g. stray "=20" appearing in some mail clients).
@@ -32,13 +32,13 @@ export function wrap(innerHtml: string, opts: BrandOptions): string {
 `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="email-card" style="width:100%;max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(0,0,0,.45);">`+
 `<tr><td class="email-head" style="background:linear-gradient(135deg,#7E57DF 0%,#6B4FD1 50%,#5C4DB8 100%);padding:28px 32px;text-align:center;">`+
 `<a href="${url}" class="email-brand" style="text-decoration:none;display:inline-block;">`+
-`<img src="${logoUrl}" alt="${name}" class="email-logo-img" style="max-height:56px;width:auto;display:block;margin:0 auto;filter:brightness(0) invert(1);" /></a></td></tr>`+
+`<img src="${logoUrl}" alt="${name}" width="180" class="email-logo-img" style="max-height:56px;width:180px;height:auto;display:block;margin:0 auto;border:0;outline:none;" /></a></td></tr>`+
 `<tr><td class="email-body" style="padding:36px 36px 28px 36px;color:#111827;line-height:1.6;font-size:15px;word-break:break-word;">${innerHtml}</td></tr>`+
 `<tr><td class="email-divider" style="padding:0 36px 32px 36px;"><div style="height:1px;background:#eef0f4;line-height:1px;font-size:1px;">&nbsp;</div></td></tr>`+
-`<tr><td class="email-foot" style="padding:0 36px 32px 36px;text-align:center;color:#6b7280;font-size:12px;line-height:1.7;">`+
-`<div style="margin-bottom:6px;"><a href="${url}" style="color:${accent};text-decoration:none;font-weight:700;">${name}</a></div>`+
-`<div>Need help? <a href="mailto:${support}" style="color:#6b7280;">${support}</a></div>`+
-`<div style="margin-top:8px;color:#9ca3af;">&copy; ${year} ${name}. All rights reserved.</div>`+
+`<tr><td class="email-foot" style="padding:0 36px 32px 36px;text-align:center;color:#6b7280;font-size:12px;line-height:1.7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">`+
+`<div style="margin-bottom:10px;"><a href="${url}" style="color:${primary};text-decoration:none;font-weight:700;font-size:15px;letter-spacing:0.3px;">${name}</a></div>`+
+`<div style="color:#6b7280;font-size:12px;margin-bottom:6px;">Need help? <a href="mailto:${support}" style="color:${accent};text-decoration:none;font-weight:600;">${support}</a></div>`+
+`<div style="color:#9ca3af;font-size:11px;margin-top:10px;padding-top:10px;border-top:1px solid #f1f2f6;">&copy; ${year} ${name}. All rights reserved.</div>`+
 `</td></tr></table></td></tr></table></body></html>`;
   return html;
 }
