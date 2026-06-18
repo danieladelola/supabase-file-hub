@@ -137,13 +137,16 @@ function Compose() {
   }
 
   async function sendTest() {
-    if (!testTo) return toast.error("Enter a test recipient");
+    const raw = testTo.trim();
+    if (!raw) return toast.error("Enter at least one test recipient");
+    const emails = raw.split(/[,;]/).map((e) => e.trim()).filter((e) => e.includes("@"));
+    if (!emails.length) return toast.error("Enter valid email addresses");
     const html = getHtml();
     if (!subject || !html) return toast.error("Subject and body are required");
     setBusy("test");
-    const r = await broadcast({ subject, html, test_to: testTo });
+    const r = await broadcast({ subject, html, test_to: emails });
     setBusy("idle");
-    if (!r.ok) toast.error(r.error ?? "Failed"); else toast.success("Test email sent");
+    if (!r.ok) toast.error(r.error ?? "Failed"); else toast.success(`Test sent to ${emails.length} recipient(s)`);
   }
 
   async function sendAll() {
@@ -286,11 +289,12 @@ function Compose() {
           <div className="space-y-2">
             <Label>Send test to</Label>
             <div className="flex gap-2">
-              <Input type="email" placeholder="you@example.com" value={testTo} onChange={(e) => setTestTo(e.target.value)} />
+              <Input type="text" placeholder="you@example.com, friend@example.com" value={testTo} onChange={(e) => setTestTo(e.target.value)} />
               <Button variant="outline" onClick={sendTest} disabled={busy !== "idle"}>
                 {busy === "test" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>
+            <p className="text-xs text-muted-foreground">Separate multiple emails with commas or semicolons.</p>
           </div>
           <div className="space-y-2">
             <Label>&nbsp;</Label>

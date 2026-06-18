@@ -55,7 +55,7 @@ export async function sendTest(to: string): Promise<SendResult> {
 }
 
 export async function broadcast(opts: {
-  subject: string; html: string; test_to?: string; announcement_id?: string;
+  subject: string; html: string; test_to?: string | string[]; announcement_id?: string;
 }): Promise<SendResult> {
   const { data, error } = await supabase.functions.invoke("send-email", {
     body: { action: "broadcast", ...opts },
