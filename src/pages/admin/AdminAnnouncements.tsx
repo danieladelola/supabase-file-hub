@@ -83,6 +83,11 @@ function Compose() {
 
   function onEditorClick(e: React.MouseEvent) {
     const t = e.target as HTMLElement;
+    // clear outline on previously selected
+    if (selectedImg && selectedImg !== t) {
+      selectedImg.style.outline = "";
+      selectedImg.style.outlineOffset = "";
+    }
     if (t.tagName === "IMG") {
       setSelectedImg(t as HTMLImageElement);
     } else {
